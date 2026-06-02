@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Awake Tracheal Intubation — Topicalisation Calculator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#0e1a1f;
+    --panel:#13252c;
+    --panel-2:#0f1f25;
+    --ink:#e7f1f0;
+    --muted:#8fa9ab;
+    --line:#234047;
+    --accent:#46d6b3;
+    --accent-dim:#2a8a76;
+    --warn:#f0a04b;
+    --danger:#ef6461;
+    --safe:#46d6b3;
+    --track:#1c333a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;}
+  body{
+    background:
+      radial-gradient(900px 500px at 85% -10%, rgba(70,214,179,.10), transparent 60%),
+      radial-gradient(700px 500px at -10% 110%, rgba(70,214,179,.06), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+    padding:24px 16px 56px;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:620px;margin:0 auto;}
+
+  header{margin-bottom:20px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin:0 0 8px;}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(24px,6.5vw,36px);line-height:1.06;margin:0;letter-spacing:-.01em;}
+  .sub{color:var(--muted);margin:10px 0 0;font-size:14.5px;line-height:1.5;}
+  .note{
+    margin-top:14px;border-left:3px solid var(--accent);background:rgba(70,214,179,.07);
+    padding:10px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#bfe9dd;
+  }
+
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:18px 18px 20px;margin-top:16px;box-shadow:0 18px 40px -30px rgba(0,0,0,.8);
+  }
+  .card.weight{padding-bottom:22px;}
+
+  .sliderhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:2px;}
+  .sliderhead .lab{font-size:14.5px;font-weight:500;line-height:1.3;}
+  .sliderhead .lab small{display:block;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.03em;margin-top:2px;font-weight:400;}
+  .readout{font-family:'IBM Plex Mono',monospace;font-weight:600;text-align:right;white-space:nowrap;flex:0 0 auto;}
+  .readout .num{font-family:'Fraunces',serif;font-weight:600;}
+  .readout .unit{color:var(--muted);font-size:13px;font-weight:400;margin-left:3px;}
+
+  .weight .sliderhead .lab{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+  .weight .readout .num{font-size:38px;}
+  .agenthead .readout .num{font-size:24px;color:var(--accent);}
+  .agenthead .readout .mg{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--warn);font-weight:500;margin-top:1px;}
+
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:42px;background:transparent;margin:6px 0 0;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:99px;background:var(--track);}
+  input[type=range]::-moz-range-track{height:10px;border-radius:99px;background:var(--track);}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:30px;height:30px;border-radius:50%;
+    background:var(--accent);border:3px solid #0a1418;margin-top:-10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.5);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:28px;height:28px;border-radius:50%;background:var(--accent);border:3px solid #0a1418;
+    box-shadow:0 2px 8px rgba(0,0,0,.5);
+  }
+  input[type=range]:active::-webkit-slider-thumb{background:#5fe9c6;transform:scale(1.05);}
+  input[type=range]:focus{outline:none;}
+  input[type=range]:focus::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(70,214,179,.25),0 2px 8px rgba(0,0,0,.5);}
+
+  .ticks{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5c757a;margin-top:-2px;padding:0 4px;}
+
+  .lbw{font-size:12.5px;color:var(--muted);line-height:1.45;margin:12px 0 0;}
+
+  .agents-label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin:26px 0 4px;padding-left:2px;}
+  .agent + .agent{margin-top:14px;padding-top:14px;border-top:1px solid #1a3138;}
+
+  .totals{margin-top:18px;background:var(--panel-2);border:1px solid var(--line);border-radius:16px;padding:18px;}
+  .totrow{display:flex;justify-content:space-between;gap:14px;}
+  .totcol .k{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+  .totcol .v{font-family:'Fraunces',serif;font-size:30px;margin-top:4px;}
+  .totcol .v small{font-size:15px;color:var(--muted);}
+  .pctline{margin-top:16px;}
+  .pctline .k{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:baseline;}
+  .pctline .k b{font-family:'Fraunces',serif;font-size:18px;color:var(--ink);font-weight:600;}
+  .bar{height:12px;border-radius:99px;background:var(--track);margin-top:8px;overflow:hidden;}
+  .bar > span{display:block;height:100%;width:0%;transition:width .2s ease,background .2s;}
+
+  .reset{
+    width:100%;margin-top:16px;background:transparent;border:1px solid var(--line);color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    padding:13px;border-radius:12px;cursor:pointer;
+  }
+  .reset:active{background:rgba(70,214,179,.08);border-color:var(--accent);color:var(--accent);}
+
+  footer{margin-top:20px;color:var(--muted);font-size:12px;line-height:1.6;}
+  footer code{font-family:'IBM Plex Mono',monospace;color:#bcd;}
+  .credit{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:#7a9296;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Anaesthetics · Airway</p>
+    <h1>Topicalisation for Awake Tracheal Intubation</h1>
+    <p class="sub">Drag the sliders to log local anaesthetic as you deliver it. Tracks the running total against the lidocaine ceiling.</p>
+    <div class="note">💧 Reminder: consider 100–200 µg glycopyrrolate as an antisialagogue.</div>
+  </header>
+
+  <div class="card weight">
+    <div class="sliderhead">
+      <span class="lab">Patient weight</span>
+      <span class="readout"><span class="num" id="wOut">70</span><span class="unit">kg</span></span>
+    </div>
+    <input type="range" id="weight" min="30" max="150" step="1" value="70">
+    <div class="ticks"><span>30</span><span>60</span><span>90</span><span>120</span><span>150</span></div>
+    <p class="lbw">The Society for Bariatric Anaesthesia recommends using <strong style="color:var(--ink)">lean body weight</strong>.</p>
+  </div>
+
+  <div class="agents-label">Agents delivered</div>
+
+  <div class="card">
+    <div class="agent" id="agent-0"></div>
+    <div class="agent" id="agent-1"></div>
+    <div class="agent" id="agent-2"></div>
+    <div class="agent" id="agent-3"></div>
+  </div>
+
+  <div class="totals">
+    <div class="totrow">
+      <div class="totcol">
+        <div class="k">Total given</div>
+        <div class="v" style="color:var(--warn)"><span id="totGiven">0</span><small> mg</small></div>
+      </div>
+      <div class="totcol" style="text-align:right">
+        <div class="k">Remaining</div>
+        <div class="v" style="color:var(--accent)"><span id="totRem">630</span><small> mg</small></div>
+      </div>
+    </div>
+    <div class="pctline">
+      <div class="k"><span>% of maximum (<span id="maxDose">630</span> mg)</span><b><span id="totPct">0.0</span>%</b></div>
+      <div class="bar"><span id="bar"></span></div>
+    </div>
+  </div>
+
+  <button class="reset" id="reset">Clear all doses</button>
+
+  <footer>
+    <p>Mirrors the source spreadsheet: <code>max = weight &times; 9 mg/kg</code>. Co-phenylcaine 5% &asymp; 10 mg lidocaine per spray; 4% lidocaine = 40 mg/ml. A clinical aid only &mdash; verify against local guidelines and patient factors; note co-phenylcaine also contains phenylephrine. Intended for local use at North Devon District Hospital.</p>
+    <p class="credit">Created by Dr Thomas Western (North Devon District Hospital)</p>
+  </footer>
+</div>
+
+<script>
+const AGENTS=[
+  {label:'5% co-phenylcaine', sub:'mucosal atomiser \u00b7 10 mg / spray', unit:'sprays', conc:10, max:30, step:1},
+  {label:'4% lidocaine \u2014 oropharynx', sub:'40 mg / ml', unit:'ml', conc:40, max:15, step:0.5},
+  {label:'4% lidocaine \u2014 larynx', sub:'40 mg / ml', unit:'ml', conc:40, max:15, step:0.5},
+  {label:'4% lidocaine \u2014 trachea', sub:'40 mg / ml', unit:'ml', conc:40, max:15, step:0.5},
+];
+
+const vals=AGENTS.map(()=>0);
+const weightEl=document.getElementById('weight');
+
+function fmtVal(v,step){ return step<1 ? (v%1===0?String(v):v.toFixed(1)) : String(v); }
+function fmt0(n){return isFinite(n)?Math.round(n):'\u2013';}
+
+AGENTS.forEach((a,i)=>{
+  const wrap=document.getElementById('agent-'+i);
+  wrap.innerHTML=
+    '<div class="sliderhead agenthead">'+
+      '<span class="lab">'+a.label+'<small>'+a.sub+'</small></span>'+
+      '<span class="readout"><span class="num" id="aout-'+i+'">0</span><span class="unit">'+a.unit+'</span><span class="mg" id="amg-'+i+'">0 mg</span></span>'+
+    '</div>'+
+    '<input type="range" id="ain-'+i+'" min="0" max="'+a.max+'" step="'+a.step+'" value="0">'+
+    '<div class="ticks"><span>0</span><span>'+a.max+'</span></div>';
+  wrap.querySelector('input').addEventListener('input',function(e){
+    vals[i]=parseFloat(e.target.value)||0;
+    calc();
+  });
+});
+
+function calc(){
+  const w=parseFloat(weightEl.value)||0;
+  document.getElementById('wOut').textContent=w;
+  const max=w*9;
+  let total=0;
+  AGENTS.forEach((a,i)=>{
+    const mg=vals[i]*a.conc;
+    total+=mg;
+    document.getElementById('aout-'+i).textContent=fmtVal(vals[i],a.step);
+    document.getElementById('amg-'+i).textContent=fmt0(mg)+' mg';
+  });
+  const rem=max-total;
+  const pct=max>0?total/max*100:0;
+
+  document.getElementById('maxDose').textContent=fmt0(max);
+  document.getElementById('totGiven').textContent=fmt0(total);
+  const remEl=document.getElementById('totRem');
+  remEl.textContent=fmt0(rem);
+  remEl.style.color=rem<0?'var(--danger)':'var(--accent)';
+  document.getElementById('totPct').textContent=pct.toFixed(1);
+
+  const bar=document.getElementById('bar');
+  bar.style.width=Math.min(100,pct)+'%';
+  bar.style.background = pct>=100
+    ? 'linear-gradient(90deg,#ef6461,#c0392b)'
+    : pct>=75
+      ? 'linear-gradient(90deg,#f0a04b,#d98028)'
+      : 'linear-gradient(90deg,#46d6b3,#2a8a76)';
+}
+
+weightEl.addEventListener('input',calc);
+document.getElementById('reset').addEventListener('click',function(){
+  vals.fill(0);
+  AGENTS.forEach((a,i)=>{document.getElementById('ain-'+i).value=0;});
+  calc();
+});
+calc();
+</script>
+</body>
+</html>
